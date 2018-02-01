@@ -1,8 +1,10 @@
 module DateTime where
 
-import Data.Map.Strict (Map(..), (!), empty, insert)
+import Data.HashMap.Strict hiding (foldr, map)
+import Data.Scientific (scientific)
 import System.Process (shell, readCreateProcess) -- to get the current time
 import Data.Text (pack, unpack, splitOn)
+import Data.Yaml
 
 data Date = Date { day :: Int, month :: Int, year :: Int}
   deriving (Eq, Ord, Show)
@@ -17,6 +19,24 @@ instance Show DateTime where
   show (DateTime { timePart = t, datePart = d }) = show (year d) ++ "-" ++ show (month d) ++ "-" ++ show (day d) ++ " " ++ show (hour t) ++ ":" ++ show (minute t)
 instance Show TimeDelta where
   show (TimeDelta { minutes = m, hours = h, days = d }) = show d ++ "d" ++ show h ++ "h" ++ show m ++ "m"
+
+instance ToJSON DateTime where
+  toJSON (DateTime t d) = Object $ foldr (uncurry insert) empty
+    [ (pack "minute", number $ minute t)
+    , (pack "hour", number $ hour t)
+    , (pack "day", number $ day d)
+    , (pack "month", number $ month d)
+    , (pack "year", number $ year d)]
+      where number c = Number $ scientific (fromIntegral c) 1
+
+instance ToJSON TimeDelta where
+  toJSON (TimeDelta m h d) = Object $ foldr (uncurry insert) empty
+    [ (pack "minutes", number m)
+    , (pack "hours", number h)
+    , (pack "days", number d)]
+      where number c = Number $ scientific (fromIntegral c) 1
+
+-- TODO FromJSON
 
 -- | 1-indexed conversion from month (1 = Jan, 2 = Feb, ..., 11 = Nov, 12 = Dec) to the number of days in it
 daysInMonth :: Int -> Int -> Int

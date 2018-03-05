@@ -1,0 +1,20 @@
+- todo item:
+    done: Undone
+    completion time: {}
+    subtasks: []
+    deadline:
+      day: 0
+      year: 0
+      month: 0
+    title: fuck
+    description: yeah
+- todo item:
+    done: Undone
+    completion time: {}
+    subtasks: []
+    deadline:
+      day: 0
+      year: 0
+      month: 0
+    title: this
+    description: is a thingy
